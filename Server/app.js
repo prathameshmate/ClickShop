@@ -2,9 +2,13 @@ import express from 'express';
 import morgan from 'morgan';
 import color from 'colors';
 import dotenv from 'dotenv';
+import dbConection from './Database/DB.js';
 
 //importing all Environment varibale
 dotenv.config();
+
+//MONGODB connection
+dbConection();
 
 //REST Object
 const app = express();
