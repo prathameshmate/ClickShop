@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import color from 'colors';
 import dotenv from 'dotenv';
 import dbConection from './Database/DB.js';
+import router from './Routes/userRouter.js';
 
 //importing all Environment varibale
 dotenv.config();
@@ -16,14 +17,9 @@ const app = express();
 //middleware
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(router);
 
 //Routes
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'welcome to nodejs application',
-  });
-});
 
 //PORT
 const PORT = process.env.PORT || 5000;
