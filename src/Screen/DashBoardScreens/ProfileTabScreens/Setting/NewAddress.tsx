@@ -6,7 +6,7 @@ import Icon1 from "react-native-vector-icons/Entypo"
 import Icon2 from "react-native-vector-icons/FontAwesome"
 import Icon3 from "react-native-vector-icons/MaterialIcons"
 import { useDispatch } from 'react-redux';
-import { add_Address } from '../../Redux/actions'
+import { add_Address } from '../../../../Redux/actions'
 import axios from 'axios';
 
 // import Geolocation from 'react-native-geolocation-service';
@@ -135,7 +135,7 @@ const NewAddress = () => {
             <View style={{ flex: 1 }}>
                 <View style={{ paddingVertical: 10, paddingHorizontal: 5  }}>
                     <TouchableOpacity onPress={navigateToDestinationScreen} style={{width :40 }}>
-                        <Image source={require("../../../Public/back.png")} style={{ width: 40, height: 40 }} />
+                        <Image source={require("../../../../../Public/back.png")} style={{ width: 40, height: 40 }} />
                     </TouchableOpacity>
                 </View>
                 <ScrollView style={{ padding: 10 }}>

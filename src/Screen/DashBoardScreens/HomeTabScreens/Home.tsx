@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,9 @@ import {
   BackHandler,
   Alert,
 } from 'react-native';
-import {Products} from './Products';
-import Product from '../Product/Product';
+import {Products} from '../Products';
+import Product from '../../../Product/Product';
+import {useFocusEffect} from '@react-navigation/native';
 
 interface Category {
   category: string;
@@ -44,30 +45,36 @@ const Home = () => {
     updateFormalShoes(Products.categorys[6].data);
     updatewatchesSmartWatches(Products.categorys[7].data);
     updateHeadset(Products.categorys[8].data);
-
-    //backhandling
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you want to Exit?', [
-        {
-          text: 'NO',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {
-          text: 'YES',
-          onPress: () => BackHandler.exitApp(),
-        },
-      ]);
-      return true; // it prevent the default behavior like (exit app when click on harkcore back button)
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
   }, []);
+
+  //BackHandler in Android
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+      return () =>
+        BackHandler.removeEventListener(
+          'hardwareBackPress',
+          handleBackButtonClick,
+        );
+    }, []),
+  );
+
+  const handleBackButtonClick = () => {
+    Alert.alert('', 'Are you want to exit App?', [
+      {
+        text: 'NO',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          BackHandler.exitApp();
+        },
+      },
+    ]);
+    return true;
+  };
 
   console.log('=================tshirt===================');
   // console.log(front);

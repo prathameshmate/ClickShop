@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import { useDispatch } from 'react-redux';
-import { delete_Address } from '../../Redux/actions';
+import { delete_Address } from '../../../../Redux/actions';
 
 const Address = (props: any) => {
     const { name, number, pin, state, city, locality, home, work } = props.item; // object destucture
