@@ -1,5 +1,11 @@
 import express from 'express';
 import UserColl from '../Model/UserColl.js';
+import bcrypt from 'bcrypt';
+import JWT from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+//importing all Environment varibale
+dotenv.config();
 
 const router = new express.Router();
 
@@ -7,10 +13,11 @@ const responseFormat = {
   success: false,
   message: '',
   errorMessage: '',
+  data: {},
 };
 
+// API for User Registration
 router.post('/register', async (req, res) => {
-    console.log('request is:>> ', req.body);
   try {
     const {fullname, username, number, email, password} = req.body;
 
@@ -22,26 +29,33 @@ router.post('/register', async (req, res) => {
       });
     }
     //check user already exit or not
+    const isEmailExists = await UserColl.findOne({email});
+    const isMobileExists = await UserColl.findOne({mobileNumber: number});
 
-    const isUserExits = await UserColl.findOne({email: email});
-    console.log('isUserExits :>> ', isUserExits);
-
-    if (isUserExits) {
+    if (isEmailExists) {
       res.status(422).json({
         ...responseFormat,
-        errorMessage: 'This user already register with this email' + email,
+        errorMessage: 'This user already register with this email ' + email,
+      });
+    } else if (isMobileExists) {
+      res.status(422).json({
+        ...responseFormat,
+        errorMessage:
+          'This user already register with this mobile number ' + number,
       });
     } else {
+      // encrypt the password before storing
+
+      const hashPassword = await bcrypt.hash(password, 12);
       const userCrete = {
         fullName: fullname,
         userName: username,
         mobileNumber: number,
         email,
-        password,
+        password: hashPassword,
       };
       const documentCreate = await UserColl.insertMany([userCrete]);
-      console.log('documentCreate :>> ', documentCreate);
-      res.status(200).json({    
+      res.status(200).json({
         ...responseFormat,
         success: true,
         message: 'Registration successfully please login',
@@ -51,6 +65,68 @@ router.post('/register', async (req, res) => {
     res.status(422).json({
       ...responseFormat,
       errorMessage: `Error while Registering user : ${err}`,
+    });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const {number, password} = req.body;
+
+    //validation
+    if (!number || !password) {
+      res.status(400).json({
+        ...responseFormat,
+        errorMessage: 'please enter mobile number and password for login',
+      });
+    }
+
+    // used to check login user present in DB or not
+    const result = await UserColl.findOne({mobileNumber: number});
+    if (result) {
+      const comparePass = await bcrypt.compare(password, result.password);
+      if (comparePass) {
+        const token = JWT.sign(
+          {mobileNumber: result.mobileNumber},
+          process.env.SECRET_KEY,
+          {expiresIn: '1h'},
+        ); // generate jwt with 1 hr expiration time
+
+        // store token in DB
+        result.token = result.token.concat({
+          token: token,
+        });
+
+        await result.save();
+
+        res.status(200).json({
+          ...responseFormat,
+          success: true,
+          message: 'Login Successfully',
+          data: {
+            fullname: result?.fullName,
+            username: result?.userName,
+            number: result?.mobileNumber,
+            email: result?.email,
+            token: token,
+          },
+        });
+      } else {
+        res.status(422).json({
+          ...responseFormat,
+          errorMessage: 'Invalid Password',
+        });
+      }
+    } else {
+      res.status(422).json({
+        ...responseFormat,
+        errorMessage: 'Invalid Mobile Number',
+      });
+    }
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while Login user : ${err}`,
     });
   }
 });

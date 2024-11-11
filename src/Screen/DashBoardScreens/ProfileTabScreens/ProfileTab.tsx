@@ -11,7 +11,7 @@ import Icon1 from 'react-native-vector-icons/Feather';
 
 const Stack = createNativeStackNavigator();
 
-const ProfileTab = (props: any) => {
+const ProfileTab = () => {
   const navigation = useNavigation();
 
   const navigateToDestinationScreen = () => {
@@ -61,7 +61,6 @@ const ProfileTab = (props: any) => {
             </TouchableOpacity>
           ),
         }}
-        initialParams={props.route.params}
         component={Profile}
       />
       <Stack.Screen name="Setting" component={Setting} />

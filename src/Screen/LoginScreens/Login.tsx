@@ -15,6 +15,7 @@ import Icon2 from 'react-native-vector-icons/Entypo';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import getDataFromAPI from '../../Networks/Network';
 
 const Login = () => {
   const [securety, updateSecurety] = useState(true);
@@ -68,53 +69,70 @@ const Login = () => {
   };
   const show = async () => {
     try {
-      const arrJson = await AsyncStorage.getItem('registrationData');
+      // const arrJson = await AsyncStorage.getItem('registrationData');
 
-      if (arrJson !== null) {
-        const arrObj = JSON.parse(arrJson);
-        updateRegistrationData(arrObj);
-        var flag = false;
-        for (let i = 0; i < arrObj.length; i++) {
-          if (
-            arrObj[i].number === data.number &&
-            arrObj[i].password === data.password
-          ) {
-            navigation.replace('DashBoardStack', arrObj[i]);
-            flag = true;
-            break;
-          }
-        }
-        if (flag) {
-          Alert.alert('Login Successfully...!');
+      // if (arrJson !== null) {
+      //   const arrObj = JSON.parse(arrJson);
+      //   updateRegistrationData(arrObj);
+      //   var flag = false;
+      //   for (let i = 0; i < arrObj.length; i++) {
+      //     if (
+      //       arrObj[i].number === data.number &&
+      //       arrObj[i].password === data.password
+      //     ) {
+      //       navigation.replace('DashBoardStack', arrObj[i]);
+      //       flag = true;
+      //       break;
+      //     }
+      //   }
+      //   if (flag) {
+      //     Alert.alert('Login Successfully...!');
 
-          //empty all cells
-          updateData(() => {
-            return {
-              number: '',
-              password: '',
-            };
-          });
-        } else {
-          Alert.alert('Invalid Credentials ... !');
-          //empty all cells
-          updateData(() => {
-            return {
-              number: '',
-              password: '',
-            };
-          });
-        }
+      //     //empty all cells
+      //     updateData(() => {
+      //       return {
+      //         number: '',
+      //         password: '',
+      //       };
+      //     });
+      //   } else {
+      //     Alert.alert('Invalid Credentials ... !');
+      //     //empty all cells
+      //     updateData(() => {
+      //       return {
+      //         number: '',
+      //         password: '',
+      //       };
+      //     });
+      //   }
+      // } else {
+      //   Alert.alert('Invalid Credentials ... !');
+      //   //empty all cells
+      //   updateData(() => {
+      //     return {
+      //       number: '',
+      //       password: '',
+      //     };
+      //   });
+      // }
+
+      // API call
+      const response = await getDataFromAPI('login', {
+        number: +data?.number,
+        password: data?.password,
+      });
+
+      if (response?.data?.success) {
+        // used to store login user basic data
+        await AsyncStorage.setItem(
+          'LoginUserData',
+          JSON.stringify(response?.data?.data),
+        );
+        Alert.alert('', response?.data?.message);
+        navigation.replace('DashBoardStack');
       } else {
-        Alert.alert('Invalid Credentials ... !');
-        //empty all cells
-        updateData(() => {
-          return {
-            number: '',
-            password: '',
-          };
-        });
+        Alert.alert('', response?.data?.errorMessage);
       }
-      // navigation.navigate("DashBoardStack" ,JSON.parse(arrJson)[0]);
     } catch (error) {
       console.error(error);
     }

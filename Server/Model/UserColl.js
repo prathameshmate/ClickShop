@@ -16,6 +16,7 @@ const schema = new mongoose.Schema(
     mobileNumber: {
       type: Number,
       required: true,
+      unique: true,
       validate: {
         validator: function (v) {
           return /^[0-9]{10}$/.test(v); // Assuming a 10-digit mobile number format
@@ -40,17 +41,15 @@ const schema = new mongoose.Schema(
       required: [true, 'please add password'],
       min: 8,
       max: 64,
-      validate: {
-        validator: function (v) {
-          // Regular expression to validate password requirements
-          return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(
-            v,
-          );
-        },
-        message: props =>
-          'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-      },
     },
+    token: [
+      {
+        token: {
+          type: String,
+          required: [true, 'please add token'],
+        },
+      },
+    ],
     // confirmPassword: {
     //   type: String,
     //   required: [true, 'please add confirm password'],

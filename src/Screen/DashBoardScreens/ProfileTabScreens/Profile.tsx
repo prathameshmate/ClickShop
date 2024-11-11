@@ -10,25 +10,27 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //camera
 import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
 
-const Profile = (props: any) => {
+const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
   const [imageUri, setImageUri] = useState('');
   const [visible, updateVisiable] = useState(false);
 
   useEffect(() => {
-    console.log('===============object in profile=====================');
-    console.log(props.route.params);
-    console.log('===============u=====================');
-    updateDataObj(props.route.params);
-    console.log('===============object in dataObj=====================');
-    console.log(dataObj);
-    console.log('====================================');
-  });
+    getDataAsyncStorage();
+  }, []);
+
+  const getDataAsyncStorage = async () => {
+    const result = await AsyncStorage.getItem('LoginUserData');
+    const userData = JSON.parse(result);
+    updateDataObj(userData);
+  };
+
 
   const navigation = useNavigation();
 

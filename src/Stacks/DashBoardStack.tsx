@@ -1,14 +1,11 @@
-import {
-  View,
-  Text,
-} from 'react-native';
+import {View, Text} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../Screen/DashBoardScreens/HomeTabScreens/Home';
 import ProfileTab from '../Screen/DashBoardScreens/ProfileTabScreens/ProfileTab';
 import Cart from '../Screen/DashBoardScreens/CartTabScreens/Cart';
 import Wishlist from '../Screen/DashBoardScreens/WishListTabScreens/Wishlist';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Feather';
 
@@ -17,21 +14,22 @@ import {useSelector} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
-const DashBoardStack = (props: any) => {
+const DashBoardStack = () => {
   //useSelector of redux for printing how much item present in cart
   const myState = useSelector(state => state.cart);
   const len = myState.length;
 
-  const [fullName, updateFullName] = useState();
-  const {fullname} = props.route.params;
+  const [userData, updateUserData] = useState({});
 
   useEffect(() => {
-    updateFullName(fullname);
-  });
+    getDataAsyncStorage();
+  }, []);
 
-  console.log('================object in Home====================');
-  console.log(props.route.params);
-  console.log('====================================');
+  const getDataAsyncStorage = async () => {
+    const result = await AsyncStorage.getItem('LoginUserData');
+    const userData = JSON.parse(result);
+    updateUserData(userData);
+  };
 
   return (
     <>
@@ -60,7 +58,7 @@ const DashBoardStack = (props: any) => {
                 <View>
                   <Text
                     style={{fontSize: 18, fontWeight: 'bold', color: '#000'}}>
-                    Hii {fullName}
+                    Hii {userData?.fullname?.trim()?.split(' ')[0]}
                   </Text>
                 </View>
               );
@@ -77,7 +75,6 @@ const DashBoardStack = (props: any) => {
         />
         <Tab.Screen
           name="ProfileTab"
-          initialParams={props.route.params}
           options={{
             headerShown: false,
             tabBarIcon: ({color, size}) => {

@@ -89,7 +89,7 @@ const SignUp = (props: any) => {
               'registrationData',
               JSON.stringify(arrObj),
             );
-            Alert.alert('Profile data updated successfully!');
+            Alert.alert('', 'Profile data updated successfully!');
 
             break;
           }
@@ -133,7 +133,7 @@ const SignUp = (props: any) => {
       const profileData = {
         fullname: fullname,
         username: username,
-        number: number,
+        number: number?.toString(),
         email: email,
         password: password,
       };
@@ -152,7 +152,7 @@ const SignUp = (props: any) => {
       (data.number === '', data.email === '') &&
       data.password === ''
     ) {
-      Alert.alert('Please fill all details properly!');
+      Alert.alert('', 'Please fill all details properly!');
     } else if (fullnameVal && usernameVal && numVal && emailVal && passVal) {
       try {
         const arrJson = await AsyncStorage.getItem('registrationData');
@@ -168,7 +168,7 @@ const SignUp = (props: any) => {
           const response = await getDataFromAPI('register', data);
 
           if (response?.data?.success) {
-            Alert.alert(response?.data?.message);
+            Alert.alert('', response?.data?.message);
             // empty all cells
             updateData(() => {
               return {
@@ -181,7 +181,7 @@ const SignUp = (props: any) => {
             });
             navigation.navigate('Login');
           } else {
-            Alert.alert(response?.data?.errorMessage);
+            Alert.alert('', response?.data?.errorMessage);
           }
         } else {
           // Save the single data to LocalStorage
@@ -194,7 +194,7 @@ const SignUp = (props: any) => {
           const response = await getDataFromAPI('register', data);
 
           if (response?.data?.success) {
-            Alert.alert(response?.data?.message);
+            Alert.alert('', response?.data?.message);
             // empty all cells
             updateData(() => {
               return {
@@ -207,14 +207,14 @@ const SignUp = (props: any) => {
             });
             navigation.navigate('Login');
           } else {
-            Alert.alert(response?.data?.errorMessage);
+            Alert.alert('', response?.data?.errorMessage);
           }
         }
       } catch (error) {
-        Alert.alert('Error while saving form data' + error);
+        Alert.alert('', 'Error while saving form data' + error);
       }
     } else {
-      Alert.alert('Please fill all details properly! ');
+      Alert.alert('', 'Please fill all details properly! ');
     }
   };
 
