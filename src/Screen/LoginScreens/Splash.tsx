@@ -1,24 +1,42 @@
-import React, {useEffect} from 'react';
-import {View, Text, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Splash = () => {
   const navigation = useNavigation();
+  const [userData, updateUserData] = useState({});
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('Login');
+    const getDataAsyncStorage = async () => {
+      try {
+        const result = await AsyncStorage.getItem('LoginUserData');
+        const parsedData = result ? JSON.parse(result) : {};
+        updateUserData(parsedData);
+      } catch (error) {
+        console.error('Error reading async storage data:', error);
+      }
+    };
+    getDataAsyncStorage();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      Object.keys(userData).length
+        ? navigation.replace('DashBoardStack')
+        : navigation.navigate('Login');
     }, 3000);
-  });
+
+    return () => clearTimeout(timer); // Clear timeout on component unmount
+  }, [userData, navigation]);
+
   return (
-    <>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Image
-          source={require('../../../Public/Logos/logo.jpg')}
-          style={{height: 200, width: 200, borderRadius: 100}}
-        />
-      </View>
-    </>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Image
+        source={require('../../../Public/Logos/logo.jpg')}
+        style={{height: 200, width: 200, borderRadius: 100}}
+      />
+    </View>
   );
 };
 
