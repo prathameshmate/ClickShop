@@ -155,60 +155,24 @@ const SignUp = (props: any) => {
       Alert.alert('', 'Please fill all details properly!');
     } else if (fullnameVal && usernameVal && numVal && emailVal && passVal) {
       try {
-        const arrJson = await AsyncStorage.getItem('registrationData');
-        if (arrJson !== null) {
-          // Save the multiple data to LocalStorage
-          const arrObj = JSON.parse(arrJson);
-          const dataArrObj = [...arrObj, data];
-          await AsyncStorage.setItem(
-            'registrationData',
-            JSON.stringify(dataArrObj),
-          );
-          //API call
-          const response = await getDataFromAPI('register', data);
+        //API call
+        const response = await getDataFromAPI('register', data);
 
-          if (response?.data?.success) {
-            Alert.alert('', response?.data?.message);
-            // empty all cells
-            updateData(() => {
-              return {
-                fullname: '',
-                username: '',
-                number: '',
-                email: '',
-                password: '',
-              };
-            });
-            navigation.navigate('Login');
-          } else {
-            Alert.alert('', response?.data?.errorMessage);
-          }
+        if (response?.data?.success) {
+          Alert.alert('', response?.data?.message);
+          // empty all cells
+          updateData(() => {
+            return {
+              fullname: '',
+              username: '',
+              number: '',
+              email: '',
+              password: '',
+            };
+          });
+          navigation.navigate('Login');
         } else {
-          // Save the single data to LocalStorage
-          await AsyncStorage.setItem(
-            'registrationData',
-            JSON.stringify([data]),
-          );
-
-          //API call
-          const response = await getDataFromAPI('register', data);
-
-          if (response?.data?.success) {
-            Alert.alert('', response?.data?.message);
-            // empty all cells
-            updateData(() => {
-              return {
-                fullname: '',
-                username: '',
-                number: '',
-                email: '',
-                password: '',
-              };
-            });
-            navigation.navigate('Login');
-          } else {
-            Alert.alert('', response?.data?.errorMessage);
-          }
+          Alert.alert('', response?.data?.errorMessage);
         }
       } catch (error) {
         Alert.alert('', 'Error while saving form data' + error);

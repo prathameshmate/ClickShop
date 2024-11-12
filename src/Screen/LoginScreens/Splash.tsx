@@ -24,7 +24,7 @@ const Splash = () => {
     const timer = setTimeout(() => {
       Object.keys(userData).length
         ? navigation.replace('DashBoardStack')
-        : navigation.navigate('Login');
+        : navigation.replace('Login');
     }, 3000);
 
     return () => clearTimeout(timer); // Clear timeout on component unmount

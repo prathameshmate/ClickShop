@@ -23,7 +23,6 @@ const Login = () => {
     number: '',
     password: '',
   });
-  const [registrationData, updateRegistrationData] = useState([]);
   const navigation = useNavigation();
 
   //BackHandler in Android
@@ -69,53 +68,6 @@ const Login = () => {
   };
   const show = async () => {
     try {
-      // const arrJson = await AsyncStorage.getItem('registrationData');
-
-      // if (arrJson !== null) {
-      //   const arrObj = JSON.parse(arrJson);
-      //   updateRegistrationData(arrObj);
-      //   var flag = false;
-      //   for (let i = 0; i < arrObj.length; i++) {
-      //     if (
-      //       arrObj[i].number === data.number &&
-      //       arrObj[i].password === data.password
-      //     ) {
-      //       navigation.replace('DashBoardStack', arrObj[i]);
-      //       flag = true;
-      //       break;
-      //     }
-      //   }
-      //   if (flag) {
-      //     Alert.alert('Login Successfully...!');
-
-      //     //empty all cells
-      //     updateData(() => {
-      //       return {
-      //         number: '',
-      //         password: '',
-      //       };
-      //     });
-      //   } else {
-      //     Alert.alert('Invalid Credentials ... !');
-      //     //empty all cells
-      //     updateData(() => {
-      //       return {
-      //         number: '',
-      //         password: '',
-      //       };
-      //     });
-      //   }
-      // } else {
-      //   Alert.alert('Invalid Credentials ... !');
-      //   //empty all cells
-      //   updateData(() => {
-      //     return {
-      //       number: '',
-      //       password: '',
-      //     };
-      //   });
-      // }
-
       // API call
       const response = await getDataFromAPI('login', {
         number: +data?.number,
@@ -129,7 +81,12 @@ const Login = () => {
           JSON.stringify(response?.data?.data),
         );
         Alert.alert('', response?.data?.message);
-        navigation.replace('DashBoardStack');
+
+        // reset is used to delete navigtion history of current navigator and avoid going back in previous screen
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'DashBoardStack'}],
+        });
       } else {
         Alert.alert('', response?.data?.errorMessage);
       }
@@ -137,9 +94,6 @@ const Login = () => {
       console.error(error);
     }
   };
-  console.log('=================registrationData===================');
-  console.log(registrationData);
-  console.log('====================================');
   // AsyncStorage.clear()
   return (
     <>
