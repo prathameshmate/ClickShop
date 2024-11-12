@@ -3,6 +3,7 @@ import UserColl from '../Model/UserColl.js';
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import auth from '../Middleware/auth.js';
 
 //importing all Environment varibale
 dotenv.config();
@@ -127,6 +128,28 @@ router.post('/login', async (req, res) => {
     res.status(422).json({
       ...responseFormat,
       errorMessage: `Error while Login user : ${err}`,
+    });
+  }
+});
+
+router.post('/profile', auth, (req, res) => {
+  try {
+    const userData = req.body.resultDoc;
+    res.status(200).json({
+      ...responseFormat,
+      success: true,
+      message: 'profile verify successfully',
+      data: {
+        fullname: userData?.fullName,
+        username: userData?.userName,
+        number: userData?.mobileNumber,
+        email: userData?.email,
+      },
+    });
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while calling profile API : ${err}`,
     });
   }
 });

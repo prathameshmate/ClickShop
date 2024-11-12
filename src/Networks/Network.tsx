@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {CONS} from '../Constant/Constant';
+
 const getDataFromAPI = async (endPoint = '', request = {}) => {
   console.log('request in network :>> ', request);
   try {

@@ -9,8 +9,7 @@ import NewAddress from './Setting/NewAddress';
 import SignUp from '../../LoginScreens/SignUp';
 import SettingIcon from 'react-native-vector-icons/Feather';
 import LogoutIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {logoutAlterBox} from '../../../CommonFunctions/CommonFunctions';
 const Stack = createNativeStackNavigator();
 
 const ProfileTab = () => {
@@ -44,43 +43,6 @@ const ProfileTab = () => {
     return false; // Allows default behavior if there's nothing left in the stack
   };
 
-  const logoutAlterBox = async () => {
-    try {
-      Alert.alert('', 'Are you want to log Out', [
-        {
-          text: 'No',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'Yes',
-          onPress: () => {
-            // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: 'LoginStack',
-                  state: {
-                    routes: [
-                      {
-                        name: 'Login', // The nested screen within LoginStack
-                      },
-                    ],
-                  },
-                },
-              ],
-            });
-
-            // delete data of perticular key in localstorage
-            AsyncStorage.removeItem('LoginUserData');
-          },
-        },
-      ]);
-    } catch (err) {
-      console.log('Error while loging out: ', err);
-    }
-  };
   return (
     <Stack.Navigator initialRouteName="Profile">
       <Stack.Screen
@@ -103,7 +65,9 @@ const ProfileTab = () => {
           headerRight: () => (
             <TouchableOpacity
               style={{width: 40, alignItems: 'center'}}
-              onPress={logoutAlterBox}>
+              onPress={() => {
+                logoutAlterBox(navigation);
+              }}>
               <LogoutIcon name="logout" size={30} color="#000" />
             </TouchableOpacity>
           ),

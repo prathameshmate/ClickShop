@@ -12,13 +12,14 @@ import {
 import {Products} from '../Products';
 import Product from '../../../Product/Product';
 import {useFocusEffect} from '@react-navigation/native';
+import {logoutAlterBox} from '../../../CommonFunctions/CommonFunctions';
 
 interface Category {
   category: string;
   data: any[]; // Replace 'any' with the actual type of data in Products.categorys
 }
 
-const Home = () => {
+const Home = ({navigation}: any) => {
   const [front, updateFront] = useState<any[]>([]);
   const [categorys, updateCategorys] = useState<Category[]>([]);
   const [tShirt, updateTShirt] = useState<any[]>([]);
@@ -60,19 +61,7 @@ const Home = () => {
   );
 
   const handleBackButtonClick = () => {
-    Alert.alert('', 'Are you want to exit App?', [
-      {
-        text: 'NO',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: () => {
-          BackHandler.exitApp();
-        },
-      },
-    ]);
+    logoutAlterBox(navigation);
     return true;
   };
 

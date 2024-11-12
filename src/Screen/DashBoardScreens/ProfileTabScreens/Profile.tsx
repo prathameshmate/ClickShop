@@ -8,6 +8,7 @@ import {
   Modal,
   Button,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //camera
 import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
+import getDataFromAPI from '../../../Networks/Network';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
@@ -26,11 +28,46 @@ const Profile = () => {
   }, []);
 
   const getDataAsyncStorage = async () => {
-    const result = await AsyncStorage.getItem('LoginUserData');
-    const userData = JSON.parse(result);
-    updateDataObj(userData);
-  };
+    try {
+      const result = await AsyncStorage.getItem('LoginUserData');
+      const userData = JSON.parse(result);
+      const response = await getDataFromAPI('profile', {
+        token: userData.token,
+        });
+        if (response?.data?.success) {
+        updateDataObj(response?.data?.data);
+      } else {
+        Alert.alert('', response?.data?.errorMessage, [
+          {
+            text: 'OK',
+            onPress: () => {
+              // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'LoginStack',
+                    state: {
+                      routes: [
+                        {
+                          name: 'Login', // The nested screen within LoginStack
+                        },
+                      ],
+                    },
+                  },
+                ],
+              });
 
+              // delete data of perticular key in localstorage
+              AsyncStorage.removeItem('LoginUserData');
+            },
+          },
+        ]);
+      }
+    } catch (err) {
+      console.log('Error while calling API', err);
+    }
+  };
 
   const navigation = useNavigation();
 
