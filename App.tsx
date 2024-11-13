@@ -1,27 +1,34 @@
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {NativeEventEmitter, NativeModules} from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginStack from './src/Stacks/LoginStack';
 import DashBoardStack from './src/Stacks/DashBoardStack';
-
-
-// redux
-import {useSelector} from 'react-redux';
+import Loader from './src/Screen/Loader';
 
 // var len: any;
 // Create the Tab Navigator
 
 const Stack = createNativeStackNavigator();
+const eventEmitter = new NativeEventEmitter(
+  NativeModules.ReactNativeEventEmitter,
+);
 
 const App = () => {
+  const [isLoading, setIsloading] = useState(false);
+
+  // used to create event
+  useEffect(() => {
+    const event = eventEmitter.addListener(
+      'showLoader',
+      (eventData = false) => {
+        setIsloading(eventData);
+      },
+    );
+    return () => {
+      event.remove();
+    };
+  }, []);
   return (
     <>
       <NavigationContainer>
@@ -30,6 +37,7 @@ const App = () => {
           <Stack.Screen name="DashBoardStack" component={DashBoardStack} />
         </Stack.Navigator>
       </NavigationContainer>
+      <Loader isLoading={isLoading} />
     </>
   );
 };

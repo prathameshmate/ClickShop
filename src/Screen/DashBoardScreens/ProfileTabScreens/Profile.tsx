@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //camera
@@ -23,9 +23,12 @@ const Profile = () => {
   const [imageUri, setImageUri] = useState('');
   const [visible, updateVisiable] = useState(false);
 
-  useEffect(() => {
-    getDataAsyncStorage();
-  }, []);
+  // called whenever screen get focused
+  useFocusEffect(
+    useCallback(() => {
+      getDataAsyncStorage();
+    }, []),
+  );
 
   const getDataAsyncStorage = async () => {
     try {
@@ -33,8 +36,8 @@ const Profile = () => {
       const userData = JSON.parse(result);
       const response = await getDataFromAPI('profile', {
         token: userData.token,
-        });
-        if (response?.data?.success) {
+      });
+      if (response?.data?.success) {
         updateDataObj(response?.data?.data);
       } else {
         Alert.alert('', response?.data?.errorMessage, [

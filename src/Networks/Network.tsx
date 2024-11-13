@@ -1,7 +1,13 @@
 import axios from 'axios';
+import {NativeEventEmitter, NativeModules} from 'react-native';
 import {CONS} from '../Constant/Constant';
 
+const eventEmitter = new NativeEventEmitter(
+  NativeModules.ReactNativeEventEmitter,
+);
+
 const getDataFromAPI = async (endPoint = '', request = {}) => {
+  eventEmitter.emit('showLoader', true);
   console.log('request in network :>> ', request);
   try {
     const response = await axios.post(`${CONS?.baseURL}${endPoint}`, request, {
@@ -11,8 +17,10 @@ const getDataFromAPI = async (endPoint = '', request = {}) => {
       },
     });
     console.log('response in network :>> ', response);
+    eventEmitter.emit('showLoader', false);
     return response;
   } catch (err) {
+    eventEmitter.emit('showLoader', false);
     console.log('Error while calling API :>> ', err);
   }
 };

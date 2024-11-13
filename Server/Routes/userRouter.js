@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
         const token = JWT.sign(
           {mobileNumber: result.mobileNumber},
           process.env.SECRET_KEY,
-          {expiresIn: '1h'},
+          {expiresIn: '10m'},
         ); // generate jwt with 1 hr expiration time
 
         // store token in DB
