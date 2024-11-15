@@ -19,6 +19,7 @@ const Loader = (props: any) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: 'center', // Center vertically
     alignItems: 'center', // Center horizontally
     backgroundColor: 'rgba(0, 0, 0, 0.2)', // Optional: semi-transparent background

@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import getDataFromAPI from '../../Networks/Network';
+import {CONS} from '../../Constant/Constant';
 
 const SignUp = (props: any) => {
   const [securety, updateSecurety] = useState(true);
@@ -172,7 +173,7 @@ const SignUp = (props: any) => {
           });
           navigation.navigate('Login');
         } else {
-          Alert.alert('', response?.data?.errorMessage);
+          Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
         }
       } catch (error) {
         Alert.alert('', 'Error while saving form data' + error);

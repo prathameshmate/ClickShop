@@ -16,6 +16,7 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getDataFromAPI from '../../Networks/Network';
+import { CONS } from '../../Constant/Constant';
 
 const Login = () => {
   const [securety, updateSecurety] = useState(true);
@@ -88,7 +89,7 @@ const Login = () => {
           routes: [{name: 'DashBoardStack'}],
         });
       } else {
-        Alert.alert('', response?.data?.errorMessage);
+        Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
       }
     } catch (error) {
       console.error(error);

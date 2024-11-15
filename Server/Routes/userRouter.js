@@ -3,7 +3,7 @@ import UserColl from '../Model/UserColl.js';
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import auth from '../Middleware/auth.js';
+import auth, {deleteTokenFromDB} from '../Middleware/auth.js';
 
 //importing all Environment varibale
 dotenv.config();
@@ -70,6 +70,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// API for User Login
 router.post('/login', async (req, res) => {
   try {
     const {number, password} = req.body;
@@ -132,6 +133,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// API for User Profile
 router.post('/profile', auth, (req, res) => {
   try {
     const userData = req.body.resultDoc;
@@ -150,6 +152,24 @@ router.post('/profile', auth, (req, res) => {
     res.status(422).json({
       ...responseFormat,
       errorMessage: `Error while calling profile API : ${err}`,
+    });
+  }
+});
+
+// API for User LogOut
+router.post('/logout', (req, res) => {
+  try {
+    const {token} = req.body;
+    deleteTokenFromDB(token, res);
+    res.status(200).json({
+      ...responseFormat,
+      success: true,
+      message: 'Logout sucessfully',
+    });
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while calling logout API : ${err}`,
     });
   }
 });

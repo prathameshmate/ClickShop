@@ -10,7 +10,7 @@ const Splash = () => {
   useEffect(() => {
     const getDataAsyncStorage = async () => {
       try {
-        const result = await AsyncStorage.getItem('LoginUserData');
+        const result: any = await AsyncStorage.getItem('LoginUserData');
         const parsedData = result ? JSON.parse(result) : {};
         updateUserData(parsedData);
       } catch (error) {

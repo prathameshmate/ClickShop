@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import getDataFromAPI from '../../../Networks/Network';
+import { CONS } from '../../../Constant/Constant';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
@@ -32,7 +33,7 @@ const Profile = () => {
 
   const getDataAsyncStorage = async () => {
     try {
-      const result = await AsyncStorage.getItem('LoginUserData');
+      const result: any = await AsyncStorage.getItem('LoginUserData');
       const userData = JSON.parse(result);
       const response = await getDataFromAPI('profile', {
         token: userData.token,
@@ -40,7 +41,7 @@ const Profile = () => {
       if (response?.data?.success) {
         updateDataObj(response?.data?.data);
       } else {
-        Alert.alert('', response?.data?.errorMessage, [
+        Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage, [
           {
             text: 'OK',
             onPress: () => {

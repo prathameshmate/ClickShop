@@ -1,8 +1,12 @@
 import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import getDataFromAPI from '../Networks/Network';
+import {CONS} from '../Constant/Constant';
 
 export const logoutAlterBox = async (navigation: any) => {
   try {
+    const result: any = await AsyncStorage.getItem('LoginUserData');
+    const userData = JSON.parse(result);
     Alert.alert('', 'Are you want to log Out', [
       {
         text: 'No',
@@ -11,26 +15,37 @@ export const logoutAlterBox = async (navigation: any) => {
       },
       {
         text: 'Yes',
-        onPress: () => {
-          // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: 'LoginStack',
-                state: {
-                  routes: [
-                    {
-                      name: 'Login', // The nested screen within LoginStack
-                    },
-                  ],
-                },
-              },
-            ],
+        onPress: async () => {
+          //API call
+          const response = await getDataFromAPI('logout', {
+            token: userData?.token,
           });
 
-          // delete data of perticular key in localstorage
-          AsyncStorage.removeItem('LoginUserData');
+          if (response?.data?.success) {
+            // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'LoginStack',
+                  state: {
+                    routes: [
+                      {
+                        name: 'Login', // The nested screen within LoginStack
+                      },
+                    ],
+                  },
+                },
+              ],
+            });
+
+            // delete data of perticular key in localstorage
+            AsyncStorage.removeItem('LoginUserData');
+
+            Alert.alert('', response?.data?.message);
+          } else {
+            Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
+          }
         },
       },
     ]);

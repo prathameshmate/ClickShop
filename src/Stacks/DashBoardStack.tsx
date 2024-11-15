@@ -26,7 +26,7 @@ const DashBoardStack = () => {
   }, []);
 
   const getDataAsyncStorage = async () => {
-    const result = await AsyncStorage.getItem('LoginUserData');
+    const result: any = await AsyncStorage.getItem('LoginUserData');
     const userData = JSON.parse(result);
     updateUserData(userData);
   };
