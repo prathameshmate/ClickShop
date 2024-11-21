@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
         const token = JWT.sign(
           {mobileNumber: result.mobileNumber},
           process.env.SECRET_KEY,
-          {expiresIn: '10m'},
+          {expiresIn: '1m'},
         ); // generate jwt with 1 hr expiration time
 
         // store token in DB
@@ -170,6 +170,44 @@ router.post('/logout', (req, res) => {
     res.status(422).json({
       ...responseFormat,
       errorMessage: `Error while calling logout API : ${err}`,
+    });
+  }
+});
+
+//API for update user profile
+router.post('/update', auth, async (req, res) => {
+  try {
+    const {fullName, userName, email} = req.body;
+
+    if (fullName && userName && email) {
+      const userData = req?.body?.resultDoc;
+
+      userData.fullName = fullName;
+      userData.userName = userName;
+      userData.email = email;
+
+      await userData?.save();
+
+      res.status(200).json({
+        ...responseFormat,
+        success: true,
+        data: {
+          fullname: userData?.fullName,
+          username: userData?.userName,
+          email: userData?.email,
+        },
+        message: 'Profile data update sucessfully',
+      });
+    } else {
+      res.status(422).json({
+        ...responseFormat,
+        errorMessage: 'please fill all the fields',
+      });
+    }
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while calling update profile API : ${err}`,
     });
   }
 });

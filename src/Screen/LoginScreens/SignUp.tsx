@@ -34,6 +34,7 @@ const SignUp = (props: any) => {
   const [numVal, updateNumval] = useState(true);
   const [emailVal, updateEmailVal] = useState(true);
   const [passVal, updatePassVal] = useState(true);
+  const [disabled, updatedisabled] = useState(false);
 
   const navigation = useNavigation();
 
@@ -70,34 +71,69 @@ const SignUp = (props: any) => {
 
   const updateProfileData = async () => {
     try {
-      const {number} = props.route.params;
+      validation();
+      if (fullnameVal && usernameVal && emailVal) {
+        // get existing login user data
 
-      const arrJson = await AsyncStorage.getItem('registrationData');
+        const existingData: any = await AsyncStorage.getItem('LoginUserData');
+        const userData = JSON.parse(existingData);
+        const reqData = {
+          token: userData?.token,
+          fullName: data?.fullname || '',
+          userName: data?.username || '',
+          email: data?.email || '',
+        };
+        const result = await getDataFromAPI('update', reqData);
+        if (result?.data?.success) {
+          //update login user data
+          await AsyncStorage.setItem(
+            'LoginUserData',
+            JSON.stringify({
+              ...userData,
+              ...result?.data?.data,
+            }),
+          );
+          Alert.alert('', result?.data?.message, [
+            {
+              text: 'ok',
+              onPress: () => {
+                navigation.navigate('Profile');
+              },
+            },
+          ]);
+        } else if (result?.status === 498) {
+          //session expire
+          Alert.alert('', result?.data?.errorMessage || CONS?.errorMessage, [
+            {
+              text: 'OK',
+              onPress: () => {
+                // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'LoginStack',
+                      state: {
+                        routes: [
+                          {
+                            name: 'Login', // The nested screen within LoginStack
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                });
 
-      if (arrJson !== null) {
-        const arrObj = JSON.parse(arrJson);
-        console.log('==============arrObj before======================');
-        console.log(arrObj);
-        console.log('====================================');
-        var tempObj = {};
-
-        for (let i = 0; i < arrObj.length; i++) {
-          if (arrObj[i].number === number) {
-            arrObj[i] = data;
-            tempObj = arrObj[i];
-
-            await AsyncStorage.setItem(
-              'registrationData',
-              JSON.stringify(arrObj),
-            );
-            Alert.alert('', 'Profile data updated successfully!');
-
-            break;
-          }
+                // delete data of perticular key in localstorage
+                AsyncStorage.removeItem('LoginUserData');
+              },
+            },
+          ]);
+        } else {
+          Alert.alert('', result?.data?.errorMessage || CONS?.errorMessage);
         }
-        navigation.navigate('Profile', tempObj);
       } else {
-        console.warn('Profile data not found');
+        Alert.alert('', 'Please fill all details properly!');
       }
     } catch (error) {
       console.log('Error updating profile data: ', error);
@@ -107,9 +143,6 @@ const SignUp = (props: any) => {
     validation();
   }, [data]);
 
-  console.log('===================data=================');
-  console.log(data);
-  console.log('====================================');
 
   useEffect(() => {
     if (
@@ -139,10 +172,8 @@ const SignUp = (props: any) => {
         password: password,
       };
       updateData(profileData);
+      updatedisabled(true);
     }
-    console.log('===================props.route.params1=================');
-    console.log(props.route.params);
-    console.log('===========================');
   }, [props.route.params]);
 
   const store = async () => {
@@ -184,64 +215,59 @@ const SignUp = (props: any) => {
   };
 
   return (
-    <>
-      <ScrollView style={{flex: 1}}>
-        <View style={styles.main}>
-          <View style={styles.createView}>
-            {props.route.params === undefined ? (
-              <Text style={styles.createTxt}> Create Account</Text>
-            ) : (
-              <Text style={styles.createTxt}> Update Account</Text>
-            )}
+    <View style={styles.main}>
+      <View style={styles.createView}>
+        {props.route.params === undefined ? (
+          <Text style={styles.createTxt}> Create Account</Text>
+        ) : (
+          <Text style={styles.createTxt}> Update Account</Text>
+        )}
+      </View>
+      <View style={{padding: 10, flex: 1}}>
+        <View
+          style={[
+            styles.userName_View,
+            {borderColor: fullnameVal ? 'gray' : 'red'},
+          ]}>
+          <Icon name="user-plus" color="gray" size={30} style={styles.icon} />
+          <TextInput
+            placeholder="Enter Your Full Name "
+            value={data.fullname}
+            style={styles.txt_Input}
+            onChangeText={type => {
+              updateDetails('fullname', type?.trimStart());
+            }}
+          />
+        </View>
+        {fullnameVal ? null : (
+          <View style={styles.invalid}>
+            <Text style={styles.invalidTxt}>
+              Please enter full name Properly
+            </Text>
           </View>
-          <View style={{padding: 10}}>
-            <View
-              style={[
-                styles.userName_View,
-                {borderColor: fullnameVal ? 'gray' : 'red'},
-              ]}>
-              <Icon
-                name="user-plus"
-                color="gray"
-                size={30}
-                style={styles.icon}
-              />
-              <TextInput
-                placeholder="Enter Your Full Name "
-                value={data.fullname}
-                style={styles.txt_Input}
-                onChangeText={type => {
-                  updateDetails('fullname', type);
-                }}
-              />
-            </View>
-            {fullnameVal ? null : (
-              <View style={styles.invalid}>
-                <Text style={styles.invalidTxt}>
-                  Please enter full name Properly
-                </Text>
-              </View>
-            )}
-            <View
-              style={[
-                styles.userName_View,
-                {borderColor: usernameVal ? 'gray' : 'red'},
-              ]}>
-              <Icon name="user" color="gray" size={30} style={styles.icon} />
-              <TextInput
-                placeholder="Enter Username "
-                value={data.username}
-                style={styles.txt_Input}
-                onChangeText={type => {
-                  updateDetails('username', type);
-                }}
-              />
-            </View>
-            {usernameVal ? null : (
-              <View style={styles.invalid}>
-                <Text style={styles.invalidTxt}>Invalid Username</Text>
-              </View>
-            )}
+        )}
+        <View
+          style={[
+            styles.userName_View,
+            {borderColor: usernameVal ? 'gray' : 'red'},
+          ]}>
+          <Icon name="user" color="gray" size={30} style={styles.icon} />
+          <TextInput
+            placeholder="Enter Username "
+            value={data.username}
+            style={styles.txt_Input}
+            onChangeText={type => {
+              updateDetails('username', type?.trim());
+            }}
+          />
+        </View>
+        {usernameVal ? null : (
+          <View style={styles.invalid}>
+            <Text style={styles.invalidTxt}>Invalid Username</Text>
+          </View>
+        )}
+        {disabled ? null : (
+          <View>
             <View
               style={[
                 styles.userName_View,
@@ -259,7 +285,7 @@ const SignUp = (props: any) => {
                 style={styles.txt_Input}
                 keyboardType="numeric"
                 maxLength={10}
-                onChangeText={type => updateDetails('number', type)}
+                onChangeText={type => updateDetails('number', type?.trim())}
               />
             </View>
             {numVal ? null : (
@@ -267,27 +293,31 @@ const SignUp = (props: any) => {
                 <Text style={styles.invalidTxt}>Invalid Mobile Number</Text>
               </View>
             )}
-            <View
-              style={[
-                styles.userName_View,
-                {borderColor: emailVal ? 'gray' : 'red'},
-              ]}>
-              <Icon1 name="email" color="gray" size={30} style={styles.icon} />
-              <TextInput
-                placeholder="Email "
-                value={data.email}
-                style={styles.txt_Input}
-                keyboardType="email-address"
-                onChangeText={type => {
-                  updateDetails('email', type);
-                }}
-              />
-            </View>
-            {emailVal ? null : (
-              <View style={styles.invalid}>
-                <Text style={styles.invalidTxt}>Invalid Email</Text>
-              </View>
-            )}
+          </View>
+        )}
+        <View
+          style={[
+            styles.userName_View,
+            {borderColor: emailVal ? 'gray' : 'red'},
+          ]}>
+          <Icon1 name="email" color="gray" size={30} style={styles.icon} />
+          <TextInput
+            placeholder="Email "
+            value={data.email}
+            style={styles.txt_Input}
+            keyboardType="email-address"
+            onChangeText={type => {
+              updateDetails('email', type?.trim());
+            }}
+          />
+        </View>
+        {emailVal ? null : (
+          <View style={styles.invalid}>
+            <Text style={styles.invalidTxt}>Invalid Email</Text>
+          </View>
+        )}
+        {disabled ? null : (
+          <View>
             <View
               style={[
                 styles.userName_View,
@@ -305,7 +335,7 @@ const SignUp = (props: any) => {
                 style={styles.txt_Input}
                 secureTextEntry={securety}
                 onChangeText={type => {
-                  updateDetails('password', type);
+                  updateDetails('password', type?.trim());
                 }}
               />
               {securety ? (
@@ -337,62 +367,72 @@ const SignUp = (props: any) => {
             )}
             <View>
               <Text
-                style={{fontSize: 14, fontWeight: 'bold', color: '#1E0063'}}>
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  color: '#1E0063',
+                }}>
                 Password should be min 8 characters, at least one uppercase
                 letter, one lowercase letter, one number and one special
                 character:
               </Text>
             </View>
-
-            {props.route.params === undefined ? (
-              <View style={styles.btnView}>
-                <TouchableOpacity
-                  style={styles.registerBtn}
-                  onPress={() => {
-                    store();
-                  }}>
-                  <Text style={styles.registerTxt}>Register</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.btnView}>
-                <TouchableOpacity
-                  style={styles.registerBtn}
-                  onPress={() => {
-                    updateProfileData();
-                  }}>
-                  <Text style={styles.registerTxt}>Update</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {props.route.params === undefined ? (
-              <View>
-                <View style={styles.policy_View}>
-                  <Text style={styles.policy_Txt}>
-                    By registering you confirm that you accept our
-                    <Text style={{color: '#CE2732'}}>
-                      {' '}
-                      Terms of Use{' '}
-                    </Text> and{' '}
-                    <Text style={{color: '#CE2732'}}>Privacy Policy.</Text>
-                  </Text>
-                </View>
-                <View style={styles.createAcc}>
-                  <Text style={styles.acc_Txt}>Have an Account ?</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigateToDestinationScreen();
-                    }}>
-                    <Text style={styles.createAccTxt}> Sign In </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : null}
           </View>
-        </View>
-      </ScrollView>
-    </>
+        )}
+
+        {props.route.params === undefined ? (
+          <View style={styles.btnView}>
+            <TouchableOpacity
+              style={styles.registerBtn}
+              onPress={() => {
+                store();
+              }}>
+              <Text style={styles.registerTxt}>Register</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.btnView,
+              {
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+              },
+            ]}>
+            <TouchableOpacity
+              style={styles.registerBtn}
+              onPress={() => {
+                updateProfileData();
+              }}>
+              <Text style={styles.registerTxt}>Update</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {props.route.params === undefined ? (
+          <View>
+            <View style={styles.policy_View}>
+              <Text style={styles.policy_Txt}>
+                By registering you confirm that you accept our
+                <Text style={{color: '#CE2732'}}> Terms of Use </Text> and{' '}
+                <Text style={{color: '#CE2732'}}>Privacy Policy.</Text>
+              </Text>
+            </View>
+            <View style={styles.createAcc}>
+              <Text style={styles.acc_Txt}>Have an Account ?</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigateToDestinationScreen();
+                }}>
+                <Text style={styles.createAccTxt}> Sign In </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+      </View>
+    </View>
   );
 };
 
@@ -471,12 +511,15 @@ const styles = StyleSheet.create({
     // borderWidth: 5,
     paddingTop: 20,
     paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   registerBtn: {
     backgroundColor: '#506ad9',
     justifyContent: 'center',
     alignItems: 'center',
     height: 40,
+    width: '75%',
     borderRadius: 5,
   },
   registerTxt: {

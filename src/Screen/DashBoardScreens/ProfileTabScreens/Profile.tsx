@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import getDataFromAPI from '../../../Networks/Network';
-import { CONS } from '../../../Constant/Constant';
+import {CONS} from '../../../Constant/Constant';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
@@ -41,32 +41,37 @@ const Profile = () => {
       if (response?.data?.success) {
         updateDataObj(response?.data?.data);
       } else {
-        Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage, [
-          {
-            text: 'OK',
-            onPress: () => {
-              // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'LoginStack',
-                    state: {
-                      routes: [
-                        {
-                          name: 'Login', // The nested screen within LoginStack
-                        },
-                      ],
+        if (response?.status === 498) {
+          //session expire
+          Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage, [
+            {
+              text: 'OK',
+              onPress: () => {
+                // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'LoginStack',
+                      state: {
+                        routes: [
+                          {
+                            name: 'Login', // The nested screen within LoginStack
+                          },
+                        ],
+                      },
                     },
-                  },
-                ],
-              });
+                  ],
+                });
 
-              // delete data of perticular key in localstorage
-              AsyncStorage.removeItem('LoginUserData');
+                // delete data of perticular key in localstorage
+                AsyncStorage.removeItem('LoginUserData');
+              },
             },
-          },
-        ]);
+          ]);
+        } else {
+          Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
+        }
       }
     } catch (err) {
       console.log('Error while calling API', err);

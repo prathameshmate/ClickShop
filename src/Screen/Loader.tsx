@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center', // Center vertically
     alignItems: 'center', // Center horizontally
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Optional: semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: semi-transparent background
     position: 'absolute', // Position it absolutely to overlay
     top: 0,
     left: 0,
