@@ -57,7 +57,7 @@ const Home = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
+    timerRef.current = setTimeout(() => {
       let nextIndex = currentSlideIndex + 1;
 
       if (nextIndex >= front.length) {
@@ -72,7 +72,7 @@ const Home = ({navigation}: any) => {
       setCurrentSlideIndex(nextIndex);
     }, 2000); // scroll every 3 seconds
 
-    return () => clearInterval(timerRef.current);
+    return () => clearTimeout(timerRef.current);
   }, [currentSlideIndex, front.length]);
 
   console.log('currentSlideIndex', currentSlideIndex);
