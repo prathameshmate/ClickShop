@@ -15,6 +15,7 @@ const getDataFromAPI = async (endPoint = '', request = {}) => {
         // Allow all status codes (or set specific conditions)
         return status < 500; // Treat any status less than 500 as a success
       },
+      timeout: 60000, // in milliseconds (60 sec)
     });
     console.log('response in network :>> ', response);
     eventEmitter.emit('showLoader', false);
