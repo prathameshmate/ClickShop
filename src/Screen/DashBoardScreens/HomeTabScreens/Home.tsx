@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,14 @@ import {
   TouchableOpacity,
   BackHandler,
   Alert,
+  Dimensions,
 } from 'react-native';
 import {Products} from '../Products';
 import Product from '../../../Product/Product';
 import {useFocusEffect} from '@react-navigation/native';
 import {logoutAlterBox} from '../../../CommonFunctions/CommonFunctions';
+
+const {width} = Dimensions.get('window');
 
 interface Category {
   category: string;
@@ -34,6 +37,11 @@ const Home = ({navigation}: any) => {
   const [watchesSmartWatches, updatewatchesSmartWatches] = useState<any[]>([]);
   const [headset, updateHeadset] = useState<any[]>([]);
 
+  const flatListRef = useRef(null);
+  const timerRef = useRef(null);
+
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
   useEffect(() => {
     updateFront(Products.categorys[9].data);
     updateCategorys(Products.categorys);
@@ -47,6 +55,27 @@ const Home = ({navigation}: any) => {
     updatewatchesSmartWatches(Products.categorys[7].data);
     updateHeadset(Products.categorys[8].data);
   }, []);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      let nextIndex = currentSlideIndex + 1;
+
+      if (nextIndex >= front.length) {
+        nextIndex = 0;
+      }
+
+      flatListRef.current.scrollToIndex({
+        index: nextIndex,
+        animated: true,
+      });
+
+      setCurrentSlideIndex(nextIndex);
+    }, 2000); // scroll every 3 seconds
+
+    return () => clearInterval(timerRef.current);
+  }, [currentSlideIndex, front.length]);
+
+  console.log('currentSlideIndex', currentSlideIndex);
 
   //BackHandler in Android
   useFocusEffect(
@@ -72,26 +101,38 @@ const Home = ({navigation}: any) => {
   console.log('================== ==================');
   return (
     <>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
         <View style={{marginBottom: 30}}>
-          <View style={{height: 170, width: '100%'}}>
+          <View style={{height: 180, width: '100%'}}>
             <FlatList
+              ref={flatListRef}
               horizontal
+              pagingEnabled
               showsHorizontalScrollIndicator={false}
               data={front}
-              renderItem={({item}) => {
-                return (
+              keyExtractor={(_, index) => index.toString()}
+              onScrollBeginDrag={() => {
+                clearTimeout(timerRef.current);
+              }}
+              onMomentumScrollEnd={e => {
+                const contentOffsetX = e.nativeEvent.contentOffset.x;
+                const index = Math.round(contentOffsetX / width);
+                setCurrentSlideIndex(index);
+              }}
+              renderItem={({item}) => (
+                <View style={{width: width}}>
                   <Image
                     source={item.img}
+                    resizeMode="contain"
                     style={{
-                      height: 170,
-                      width: 410,
+                      height: 180,
+                      width: width - 30, // Adjust width as needed
                       borderRadius: 10,
-                      marginRight: 10,
+                      alignSelf: 'center',
                     }}
                   />
-                );
-              }}
+                </View>
+              )}
             />
           </View>
 

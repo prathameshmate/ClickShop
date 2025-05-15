@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "android-release": "react-native run-android --variant=release",
-    "android-release-2": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android-release": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android-release-variant": "react-native run-android --variant=release",
     "ios": "react-native run-ios",
     "ios-release": "react-native run-ios --configuration=release",
     "lint": "eslint .",
