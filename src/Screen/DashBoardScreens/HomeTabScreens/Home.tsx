@@ -14,6 +14,8 @@ import {Products} from '../Products';
 import Product from '../../../Product/Product';
 import {useFocusEffect} from '@react-navigation/native';
 import {logoutAlterBox} from '../../../CommonFunctions/CommonFunctions';
+import {useSelector, useDispatch} from 'react-redux';
+import {CONS} from '../../../Constant/Constant';
 
 const {width} = Dimensions.get('window');
 
@@ -40,21 +42,67 @@ const Home = ({navigation}: any) => {
   const flatListRef = useRef(null);
   const timerRef = useRef(null);
 
+  const dispatch = useDispatch();
+  const dynamicProducts = useSelector(state => state.products);
+  console.log('dynamicProducts', dynamicProducts);
+
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
-    updateFront(Products.categorys[9].data);
-    updateCategorys(Products.categorys);
-    updateTShirt(Products.categorys[0].data);
-    updateShirt(Products.categorys[1].data);
-    updateJacket(Products.categorys[2].data);
-    updatejeansNightTrouserPants(Products.categorys[3].data);
-    updateSportShoes(Products.categorys[4].data);
-    updateCasualShoes(Products.categorys[5].data);
-    updateFormalShoes(Products.categorys[6].data);
-    updatewatchesSmartWatches(Products.categorys[7].data);
-    updateHeadset(Products.categorys[8].data);
-  }, []);
+    updateFront(
+      dynamicProducts.length
+        ? dynamicProducts[9].data
+        : Products.categorys[9].data,
+    );
+    updateCategorys(
+      dynamicProducts.length ? dynamicProducts : Products.categorys,
+    );
+    updateTShirt(
+      dynamicProducts.length
+        ? dynamicProducts[0].data
+        : Products.categorys[0].data,
+    );
+    updateShirt(
+      dynamicProducts.length
+        ? dynamicProducts[1].data
+        : Products.categorys[1].data,
+    );
+    updateJacket(
+      dynamicProducts.length
+        ? dynamicProducts[2].data
+        : Products.categorys[2].data,
+    );
+    updatejeansNightTrouserPants(
+      dynamicProducts.length
+        ? dynamicProducts[3].data
+        : Products.categorys[3].data,
+    );
+    updateSportShoes(
+      dynamicProducts.length
+        ? dynamicProducts[4].data
+        : Products.categorys[4].data,
+    );
+    updateCasualShoes(
+      dynamicProducts.length
+        ? dynamicProducts[5].data
+        : Products.categorys[5].data,
+    );
+    updateFormalShoes(
+      dynamicProducts.length
+        ? dynamicProducts[6].data
+        : Products.categorys[6].data,
+    );
+    updatewatchesSmartWatches(
+      dynamicProducts.length
+        ? dynamicProducts[7].data
+        : Products.categorys[7].data,
+    );
+    updateHeadset(
+      dynamicProducts.length
+        ? dynamicProducts[8].data
+        : Products.categorys[8].data,
+    );
+  }, [dynamicProducts]);
 
   useEffect(() => {
     timerRef.current = setTimeout(() => {
@@ -70,7 +118,7 @@ const Home = ({navigation}: any) => {
       });
 
       setCurrentSlideIndex(nextIndex);
-    }, 2000); // scroll every 3 seconds
+    }, 3000); // scroll every 3 seconds
 
     return () => clearTimeout(timerRef.current);
   }, [currentSlideIndex, front.length]);
@@ -90,7 +138,7 @@ const Home = ({navigation}: any) => {
   );
 
   const handleBackButtonClick = () => {
-    logoutAlterBox(navigation);
+    logoutAlterBox(navigation, dispatch);
     return true;
   };
 
@@ -119,18 +167,39 @@ const Home = ({navigation}: any) => {
                 const index = Math.round(contentOffsetX / width);
                 setCurrentSlideIndex(index);
               }}
+              onScrollToIndexFailed={info => {
+                setTimeout(() => {
+                  flatListRef.current?.scrollToIndex({
+                    index: info.index,
+                    animated: true,
+                  });
+                }, 100); // slight delay to allow list to render
+              }}
               renderItem={({item}) => (
                 <View style={{width: width}}>
-                  <Image
-                    source={item.img}
-                    resizeMode="contain"
-                    style={{
-                      height: 180,
-                      width: width - 30, // Adjust width as needed
-                      borderRadius: 10,
-                      alignSelf: 'center',
-                    }}
-                  />
+                  {dynamicProducts.length ? (
+                    <Image
+                      source={{uri: `${CONS?.baseURL}${item.img}`}}
+                      resizeMode="contain"
+                      style={{
+                        height: 180,
+                        width: width - 30, // Adjust width as needed
+                        borderRadius: 10,
+                        alignSelf: 'center',
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      source={item.img}
+                      resizeMode="contain"
+                      style={{
+                        height: 180,
+                        width: width - 30, // Adjust width as needed
+                        borderRadius: 10,
+                        alignSelf: 'center',
+                      }}
+                    />
+                  )}
                 </View>
               )}
             />
@@ -172,7 +241,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={tShirt}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -187,7 +261,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={shirt}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -202,7 +281,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={jacket}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -217,7 +301,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={jeansNightTrouserPants}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -232,7 +321,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={sportShoes}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -247,7 +341,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={casualShoes}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -262,7 +361,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={formalShoes}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -277,7 +381,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={watchesSmartWatches}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>
@@ -292,7 +401,12 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={headset}
               renderItem={({item, index}) => {
-                return <Product item={item} />;
+                return (
+                  <Product
+                    item={item}
+                    dynamicProducts={dynamicProducts?.length ? true : false}
+                  />
+                );
               }}
             />
           </View>

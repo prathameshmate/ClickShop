@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import auth, {deleteTokenFromDB} from '../Middleware/auth.js';
+import {Products} from '../Product/Product.js';
 
 //importing all Environment varibale
 dotenv.config();
@@ -16,6 +17,25 @@ const responseFormat = {
   errorMessage: '',
   data: {},
 };
+
+// API for User Registration
+router.post('/launchDetails', auth, async (req, res) => {
+  try {
+    const {deviceID} = req.body;
+
+    res.status(200).json({
+      ...responseFormat,
+      data: Products,
+      success: true,
+      message: 'Success',
+    });
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while launchDetails : ${err}`,
+    });
+  }
+});
 
 // API for User Registration
 router.post('/register', async (req, res) => {
@@ -111,6 +131,7 @@ router.post('/login', async (req, res) => {
             number: result?.mobileNumber,
             email: result?.email,
             token: token,
+            Products: Products,
           },
         });
       } else {

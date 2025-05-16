@@ -2,8 +2,9 @@ import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getDataFromAPI from '../Networks/Network';
 import {CONS} from '../Constant/Constant';
+import {add_Product} from '../Redux/actions';
 
-export const logoutAlterBox = async (navigation: any) => {
+export const logoutAlterBox = async (navigation: any, dispatch: any) => {
   try {
     const result: any = await AsyncStorage.getItem('LoginUserData');
     const userData = JSON.parse(result);
@@ -22,6 +23,9 @@ export const logoutAlterBox = async (navigation: any) => {
           });
 
           if (response?.data?.success) {
+            //reset store
+            dispatch(add_Product([]));
+
             // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
             navigation.reset({
               index: 0,

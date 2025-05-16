@@ -16,7 +16,9 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getDataFromAPI from '../../Networks/Network';
-import { CONS } from '../../Constant/Constant';
+import {CONS} from '../../Constant/Constant';
+import {useDispatch} from 'react-redux';
+import {add_Product} from '../../Redux/actions';
 
 const Login = () => {
   const [securety, updateSecurety] = useState(true);
@@ -25,6 +27,7 @@ const Login = () => {
     password: '',
   });
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   //BackHandler in Android
   useFocusEffect(
@@ -82,6 +85,9 @@ const Login = () => {
           JSON.stringify(response?.data?.data),
         );
         Alert.alert('', response?.data?.message);
+
+        // used to store all products in the redux store
+        dispatch(add_Product(response?.data?.data?.Products?.categorys || []));
 
         // reset is used to delete navigtion history of current navigator and avoid going back in previous screen
         navigation.reset({

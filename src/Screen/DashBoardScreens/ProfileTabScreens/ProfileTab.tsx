@@ -10,10 +10,12 @@ import SignUp from '../../LoginScreens/SignUp';
 import SettingIcon from 'react-native-vector-icons/Feather';
 import LogoutIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {logoutAlterBox} from '../../../CommonFunctions/CommonFunctions';
+import { useDispatch } from 'react-redux';
 const Stack = createNativeStackNavigator();
 
 const ProfileTab = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const navigateToDestinationScreen = () => {
     navigation.navigate('Setting');
@@ -66,7 +68,7 @@ const ProfileTab = () => {
             <TouchableOpacity
               style={{width: 40, alignItems: 'center'}}
               onPress={() => {
-                logoutAlterBox(navigation);
+                logoutAlterBox(navigation, dispatch);
               }}>
               <LogoutIcon name="logout" size={30} color="#000" />
             </TouchableOpacity>

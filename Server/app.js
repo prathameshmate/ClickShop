@@ -5,6 +5,13 @@ import dotenv from 'dotenv';
 import dbConection from './Database/DB.js';
 import router from './Routes/userRouter.js';
 
+import path from 'path';
+import {fileURLToPath} from 'url';
+import {dirname} from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 //importing all Environment varibale
 dotenv.config();
 
@@ -19,7 +26,13 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(router);
 
-//Routes
+// Serve images from /public folder
+app.use('/products', express.static(path.join(__dirname, 'Public/products')));
+app.use('/front', express.static(path.join(__dirname, 'Public/front')));
+app.use(
+  '/shoesAndOther',
+  express.static(path.join(__dirname, 'Public/shoesAndOther')),
+);
 
 //PORT
 const PORT = process.env.PORT || 5000;
