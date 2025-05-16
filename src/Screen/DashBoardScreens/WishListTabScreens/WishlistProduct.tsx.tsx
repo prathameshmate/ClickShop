@@ -4,9 +4,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import {useDispatch, useSelector} from 'react-redux';
 import {add_To_Cart, remove_From_Wishlist} from '../../../Redux/actions';
+import {CONS} from '../../../Constant/Constant';
 
 const WishlistProduct = (props: any) => {
   const {id, name, img, price} = props.item;
+  const dynamicProducts = useSelector(state => state.products);
   const [isAddedCart, setIsAddedCart] = useState(false);
 
   const myState = useSelector(state => state.cart);
@@ -38,7 +40,12 @@ const WishlistProduct = (props: any) => {
     <>
       <View style={styles.container}>
         <View style={{width: '100%', height: '60%'}}>
-          <Image source={img} style={styles.containerImg} />
+          <Image
+            source={
+              dynamicProducts.length ? {uri: `${CONS?.baseURL}${img}`} : img
+            }
+            style={styles.containerImg}
+          />
           <TouchableOpacity
             style={styles.containerBtn1}
             onPress={() => {

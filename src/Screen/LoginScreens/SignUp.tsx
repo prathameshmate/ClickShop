@@ -18,6 +18,8 @@ import Icon1 from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import getDataFromAPI from '../../Networks/Network';
 import {CONS} from '../../Constant/Constant';
+import {navigateToLoginScreen} from '../../CommonFunctions/CommonFunctions';
+import {useDispatch} from 'react-redux';
 
 const SignUp = (props: any) => {
   const [securety, updateSecurety] = useState(true);
@@ -37,6 +39,7 @@ const SignUp = (props: any) => {
   const [disabled, updatedisabled] = useState(false);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const navigateToDestinationScreen = () => {
     navigation.navigate('Login');
@@ -107,22 +110,7 @@ const SignUp = (props: any) => {
             {
               text: 'OK',
               onPress: () => {
-                // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: 'LoginStack',
-                      state: {
-                        routes: [
-                          {
-                            name: 'Login', // The nested screen within LoginStack
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                });
+                navigateToLoginScreen(navigation, dispatch);
 
                 // delete data of perticular key in localstorage
                 AsyncStorage.removeItem('LoginUserData');
@@ -142,7 +130,6 @@ const SignUp = (props: any) => {
   useEffect(() => {
     validation();
   }, [data]);
-
 
   useEffect(() => {
     if (

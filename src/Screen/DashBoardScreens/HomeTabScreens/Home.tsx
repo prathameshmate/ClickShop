@@ -44,7 +44,6 @@ const Home = ({navigation}: any) => {
 
   const dispatch = useDispatch();
   const dynamicProducts = useSelector(state => state.products);
-  console.log('dynamicProducts', dynamicProducts);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -177,29 +176,20 @@ const Home = ({navigation}: any) => {
               }}
               renderItem={({item}) => (
                 <View style={{width: width}}>
-                  {dynamicProducts.length ? (
-                    <Image
-                      source={{uri: `${CONS?.baseURL}${item.img}`}}
-                      resizeMode="contain"
-                      style={{
-                        height: 180,
-                        width: width - 30, // Adjust width as needed
-                        borderRadius: 10,
-                        alignSelf: 'center',
-                      }}
-                    />
-                  ) : (
-                    <Image
-                      source={item.img}
-                      resizeMode="contain"
-                      style={{
-                        height: 180,
-                        width: width - 30, // Adjust width as needed
-                        borderRadius: 10,
-                        alignSelf: 'center',
-                      }}
-                    />
-                  )}
+                  <Image
+                    source={
+                      dynamicProducts.length
+                        ? {uri: `${CONS?.baseURL}${item.img}`}
+                        : item.img
+                    }
+                    resizeMode="contain"
+                    style={{
+                      height: 180,
+                      width: width - 30, // Adjust width as needed
+                      borderRadius: 10,
+                      alignSelf: 'center',
+                    }}
+                  />
                 </View>
               )}
             />
@@ -241,12 +231,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={tShirt}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -261,12 +246,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={shirt}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -281,12 +261,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={jacket}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -301,12 +276,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={jeansNightTrouserPants}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -321,12 +291,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={sportShoes}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -341,12 +306,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={casualShoes}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -361,12 +321,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={formalShoes}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -381,12 +336,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={watchesSmartWatches}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>
@@ -401,12 +351,7 @@ const Home = ({navigation}: any) => {
               showsHorizontalScrollIndicator={false}
               data={headset}
               renderItem={({item, index}) => {
-                return (
-                  <Product
-                    item={item}
-                    dynamicProducts={dynamicProducts?.length ? true : false}
-                  />
-                );
+                return <Product item={item} />;
               }}
             />
           </View>

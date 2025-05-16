@@ -7,7 +7,8 @@ import {add_To_Wishlist, remove_From_Wishlist} from '../Redux/actions';
 import {CONS} from '../Constant/Constant';
 
 const Product = (props: any) => {
-  const {item, dynamicProducts = false} = props || {};
+  const {item} = props || {};
+  const dynamicProducts = useSelector(state => state.products);
 
   const {id, name, price, img} = item;
   const [isAddedCart, updateIsAddedCart] = useState(false);
@@ -79,27 +80,18 @@ const Product = (props: any) => {
           marginRight: 10,
           marginBottom: 10,
         }}>
-        {dynamicProducts ? (
-          <Image
-            source={{uri: `${CONS?.baseURL}${item.img}`}}
-            style={{
-              width: '100%',
-              height: '60%',
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-            }}
-          />
-        ) : (
-          <Image
-            source={img}
-            style={{
-              width: '100%',
-              height: '60%',
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-            }}
-          />
-        )}
+        <Image
+          source={
+            dynamicProducts.length ? {uri: `${CONS?.baseURL}${img}`} : img
+          }
+          style={{
+            width: '100%',
+            height: '60%',
+            borderTopLeftRadius: 15,
+            borderTopRightRadius: 15,
+          }}
+        />
+
         <Text
           style={{
             fontSize: 18,

@@ -18,11 +18,15 @@ import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import getDataFromAPI from '../../../Networks/Network';
 import {CONS} from '../../../Constant/Constant';
+import {navigateToLoginScreen} from '../../../CommonFunctions/CommonFunctions';
+import {useDispatch} from 'react-redux';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
   const [imageUri, setImageUri] = useState('');
   const [visible, updateVisiable] = useState(false);
+
+  const dispatch = useDispatch();
 
   // called whenever screen get focused
   useFocusEffect(
@@ -47,22 +51,7 @@ const Profile = () => {
             {
               text: 'OK',
               onPress: () => {
-                // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: 'LoginStack',
-                      state: {
-                        routes: [
-                          {
-                            name: 'Login', // The nested screen within LoginStack
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                });
+                navigateToLoginScreen(navigation, dispatch);
 
                 // delete data of perticular key in localstorage
                 AsyncStorage.removeItem('LoginUserData');

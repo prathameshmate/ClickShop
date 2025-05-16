@@ -2,7 +2,12 @@ import {Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getDataFromAPI from '../Networks/Network';
 import {CONS} from '../Constant/Constant';
-import {add_Product} from '../Redux/actions';
+import {
+  add_Product,
+  reset_Address,
+  reset_Cart,
+  reset_Wishlist,
+} from '../Redux/actions';
 
 export const logoutAlterBox = async (navigation: any, dispatch: any) => {
   try {
@@ -23,25 +28,7 @@ export const logoutAlterBox = async (navigation: any, dispatch: any) => {
           });
 
           if (response?.data?.success) {
-            //reset store
-            dispatch(add_Product([]));
-
-            // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: 'LoginStack',
-                  state: {
-                    routes: [
-                      {
-                        name: 'Login', // The nested screen within LoginStack
-                      },
-                    ],
-                  },
-                },
-              ],
-            });
+            navigateToLoginScreen(navigation, dispatch);
 
             // delete data of perticular key in localstorage
             AsyncStorage.removeItem('LoginUserData');
@@ -56,4 +43,28 @@ export const logoutAlterBox = async (navigation: any, dispatch: any) => {
   } catch (err) {
     console.log('Error while loging out: ', err);
   }
+};
+
+export const navigateToLoginScreen = (navigation: any, dispatch: any) => {
+  //reset store
+  dispatch(add_Product([]));
+  dispatch(reset_Cart());
+  dispatch(reset_Wishlist());
+  dispatch(reset_Address());
+  // used to delete navigation history and go to LoginStack=>Login screen (nasted navigation with delelting navigation history)
+  navigation.reset({
+    index: 0,
+    routes: [
+      {
+        name: 'LoginStack',
+        state: {
+          routes: [
+            {
+              name: 'Login', // The nested screen within LoginStack
+            },
+          ],
+        },
+      },
+    ],
+  });
 };

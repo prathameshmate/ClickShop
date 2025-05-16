@@ -11,6 +11,11 @@ export const remove_From_Cart = (id: any) => {
     payload: id,
   };
 };
+export const reset_Cart = () => {
+  return {
+    type: 'reset_Cart',
+  };
+};
 
 //Wishlist
 export const add_To_Wishlist = (item: any) => {
@@ -25,6 +30,11 @@ export const remove_From_Wishlist = (id: any) => {
     payload: id,
   };
 };
+export const reset_Wishlist = () => {
+  return {
+    type: 'reset_Wishlist',
+  };
+};
 
 //address
 export const add_Address = (item: any) => {
@@ -37,6 +47,11 @@ export const delete_Address = (id: any) => {
   return {
     type: 'delete_Address',
     payload: id,
+  };
+};
+export const reset_Address = () => {
+  return {
+    type: 'reset_Address',
   };
 };
 

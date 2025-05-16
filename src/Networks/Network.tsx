@@ -7,7 +7,9 @@ const eventEmitter = new NativeEventEmitter(
 );
 
 const getDataFromAPI = async (endPoint = '', request = {}) => {
-  eventEmitter.emit('showLoader', true);
+  if (endPoint !== 'launchDetails') {
+    eventEmitter.emit('showLoader', true);
+  }
   console.log('request in network :>> ', request);
   try {
     const response = await axios.post(`${CONS?.baseURL}${endPoint}`, request, {
