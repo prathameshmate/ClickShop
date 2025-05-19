@@ -1,10 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  InteractionManager,
+  NativeEventEmitter,
+  NativeModules,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useDispatch, useSelector} from 'react-redux';
 import {add_To_Cart, remove_From_Cart} from '../Redux/actions';
 import {add_To_Wishlist, remove_From_Wishlist} from '../Redux/actions';
 import {CONS} from '../Constant/Constant';
+const eventEmitter = new NativeEventEmitter(
+  NativeModules.ReactNativeEventEmitter,
+);
 
 const Product = (props: any) => {
   const {item} = props || {};
@@ -54,18 +65,46 @@ const Product = (props: any) => {
 
   //cart handles
   const handleAddCart = () => {
+    eventEmitter.emit('showLoader', true);
     dispatch(add_To_Cart(item));
+
+    requestAnimationFrame(() => {
+      InteractionManager.runAfterInteractions(() => {
+        eventEmitter.emit('showLoader', false);
+      });
+    });
   };
   const handleRemoveCart = (id: any) => {
+    eventEmitter.emit('showLoader', true);
+
     dispatch(remove_From_Cart(id));
+    requestAnimationFrame(() => {
+      InteractionManager.runAfterInteractions(() => {
+        eventEmitter.emit('showLoader', false);
+      });
+    });
   };
 
   // wishlist handles
   const handleAddWishlist = () => {
+    eventEmitter.emit('showLoader', true);
+
     dispatch(add_To_Wishlist(item));
+    requestAnimationFrame(() => {
+      InteractionManager.runAfterInteractions(() => {
+        eventEmitter.emit('showLoader', false);
+      });
+    });
   };
   const handleRemoveWishlist = (id: any) => {
+    eventEmitter.emit('showLoader', true);
+
     dispatch(remove_From_Wishlist(id));
+    requestAnimationFrame(() => {
+      InteractionManager.runAfterInteractions(() => {
+        eventEmitter.emit('showLoader', false);
+      });
+    });
   };
 
   return (
@@ -187,4 +226,4 @@ const Product = (props: any) => {
   );
 };
 
-export default Product;
+export default React.memo(Product);

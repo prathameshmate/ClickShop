@@ -17,7 +17,9 @@ const Tab = createBottomTabNavigator();
 const DashBoardStack = () => {
   //useSelector of redux for printing how much item present in cart
   const myState = useSelector(state => state.cart);
+  const wishhlist = useSelector(state => state.wishlist);
   const len = myState.length;
+  const len1 = wishhlist.length;
 
   const [userData, updateUserData] = useState({});
 
@@ -89,6 +91,8 @@ const DashBoardStack = () => {
             tabBarIcon: ({color, size}) => {
               return <Icon name="heart" size={30} color={color} />;
             },
+            tabBarBadge: len1,
+
             tabBarBadgeStyle: {
               backgroundColor: 'red',
               elevation: 5,

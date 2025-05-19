@@ -170,7 +170,11 @@ const Login = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.forgot_View}>
-            <TouchableOpacity style={styles.forgot}>
+            <TouchableOpacity
+              style={styles.forgot}
+              onPress={() => {
+                Alert.alert('', 'coming soon');
+              }}>
               <Text style={styles.forgot_Txt}>Forgot Password ?</Text>
             </TouchableOpacity>
           </View>
