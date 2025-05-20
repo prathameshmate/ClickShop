@@ -21,6 +21,7 @@ import {CONS} from '../../../Constant/Constant';
 import {navigateToLoginScreen} from '../../../CommonFunctions/CommonFunctions';
 import {useDispatch} from 'react-redux';
 import RNFS from 'react-native-fs';
+import {Image as IMG} from 'react-native-compressor';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
@@ -132,21 +133,45 @@ const Profile = () => {
     }
   };
 
+  const compressToTargetSize = async (uri: any, targetSize = 50) => {
+    let quality = 1.0;
+    let base64 = '';
+    let sizeKB = Infinity;
+
+    while (quality > 0.1 && sizeKB > targetSize) {
+      const compressedUri = await IMG.compress(uri, {
+        compressionMethod: 'auto',
+        quality,
+      });
+
+      base64 = await RNFS.readFile(compressedUri, 'base64');
+      const stats = await RNFS.stat(compressedUri);
+      sizeKB = stats.size / 1024;
+      console.log(`Quality: ${quality}, Size: ${sizeKB}KB`);
+      quality -= 0.1;
+    }
+
+    return base64;
+  };
   const openCamera = async () => {
     try {
       const img = await ImagePicker.openCamera({
-        width: 300,
-        height: 400,
+        width: 800,
+        height: 800,
         cropping: true,
         compressImageQuality: 0.8,
         includeBase64: true,
       });
       console.log('img', img.size / 1024 + 'KB');
 
-      // const base64 = await RNFS.readFile(img?.path, 'base64');
-      // console.log('base64', base64);
-
-      setProfileImage(img?.data || '');
+      // Check the file size and re-compress if necessary
+      if (img.size / 1024 > 50) {
+        const base64 = await compressToTargetSize(img?.path, 50);
+        console.log('base64', base64);
+        setProfileImage(base64 || '');
+      } else {
+        setProfileImage(img?.data || '');
+      }
     } catch (err) {
       console.log(err);
     }
@@ -154,14 +179,20 @@ const Profile = () => {
   const openGallary = async () => {
     try {
       const img = await ImagePicker.openPicker({
-        width: 300,
-        height: 400,
+        width: 800,
+        height: 800,
         cropping: true,
         compressImageQuality: 0.8,
         includeBase64: true,
       });
       console.log('img', img.size / 1024 + 'KB');
-      setProfileImage(img?.data || '');
+      // Check the file size and re-compress if necessary
+      if (img.size / 1024 > 50) {
+        const base64 = await compressToTargetSize(img?.path, 50);
+        setProfileImage(base64 || '');
+      } else {
+        setProfileImage(img?.data || '');
+      }
     } catch (err) {
       console.log(err);
     }
