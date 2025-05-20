@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   TextInput,
@@ -8,6 +8,9 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  ScrollView,
+  Dimensions,
+  findNodeHandle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Icon1 from 'react-native-vector-icons/MaterialIcons';
@@ -19,6 +22,7 @@ import getDataFromAPI from '../../Networks/Network';
 import {CONS} from '../../Constant/Constant';
 import {useDispatch} from 'react-redux';
 import {add_Product} from '../../Redux/actions';
+const height = Dimensions.get('window').height;
 
 const Login = () => {
   const [securety, updateSecurety] = useState(true);
@@ -28,6 +32,23 @@ const Login = () => {
   });
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const scrollRef = useRef(null);
+  const ref = useRef(null);
+
+  // func to auto scroll
+  const scrollToItem = (mainRef: any) => {
+    mainRef.current?.measureLayout(
+      findNodeHandle(scrollRef.current),
+      (x, y) => {
+        console.log('y', y);
+        scrollRef.current?.scrollTo({y, animated: true});
+      },
+      error => {
+        console.log('error', error);
+      },
+    );
+  };
 
   //BackHandler in Android
   useFocusEffect(
@@ -104,22 +125,29 @@ const Login = () => {
   // AsyncStorage.clear()
   return (
     <>
-      <View style={styles.main}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.scrollContainer}>
         <View style={styles.flip_View}>
           <Image
             source={require('../../../Public/Logos/logo.jpg')}
             style={styles.flip_Img}
           />
         </View>
-        <View style={{flex: 2, padding: 10}}>
+        <View style={{flex: 1, padding: 10}}>
           <View style={styles.userName_View}>
             <Icon name="user" color="gray" size={35} style={styles.icon} />
             <TextInput
+              ref={ref}
+              onLayout={() => {
+                scrollToItem(ref);
+              }}
               placeholder="Mobile number +91 "
               value={data.number}
               keyboardType="numeric"
               maxLength={10}
               style={styles.txt_Input}
+              autoFocus={true}
               onChangeText={type => {
                 updateDetails('number', type);
               }}
@@ -188,26 +216,25 @@ const Login = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    // borderWidth: 3,
+  scrollContainer: {
+    flexGrow: 1,
   },
   flip_Img: {
     width: '50%',
     height: 100,
   },
   flip_View: {
-    // borderWidth: 4,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    // flex: 1,
+    height: height / 3,
   },
   userName_View: {
     borderWidth: 0.5,

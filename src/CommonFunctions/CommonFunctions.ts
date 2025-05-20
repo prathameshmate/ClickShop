@@ -68,3 +68,17 @@ export const navigateToLoginScreen = (navigation: any, dispatch: any) => {
     ],
   });
 };
+
+// used to check base64 or not
+export const isBase64 = (str: any) => {
+  if (typeof str !== 'string') return false;
+
+  const notBase64 = /[^A-Z0-9+\/=]/i;
+  const len = str.length;
+
+  if (!len || len % 4 !== 0 || notBase64.test(str)) {
+    return false;
+  }
+
+  return true;
+};

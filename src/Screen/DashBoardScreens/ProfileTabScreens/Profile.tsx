@@ -14,16 +14,17 @@ import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //camera
-import ImagePicker, {openCamera} from 'react-native-image-crop-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import {request, PERMISSIONS} from 'react-native-permissions';
 import getDataFromAPI from '../../../Networks/Network';
 import {CONS} from '../../../Constant/Constant';
 import {navigateToLoginScreen} from '../../../CommonFunctions/CommonFunctions';
 import {useDispatch} from 'react-redux';
+import RNFS from 'react-native-fs';
 
 const Profile = () => {
   var [dataObj, updateDataObj] = useState({});
-  const [imageUri, setImageUri] = useState('');
+  const [base64Image, setBase64Image] = useState('');
   const [visible, updateVisiable] = useState(false);
 
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ const Profile = () => {
       });
       if (response?.data?.success) {
         updateDataObj(response?.data?.data);
+        setBase64Image(response?.data?.data.base64ProfileImg || '');
       } else {
         if (response?.status === 498) {
           //session expire
@@ -94,14 +96,57 @@ const Profile = () => {
     }
   };
 
+  //calling set profile image API
+  const setProfileImage = async (base64Image: any) => {
+    try {
+      const result: any = await AsyncStorage.getItem('LoginUserData');
+      const userData = JSON.parse(result);
+      const reqData = {
+        base64ProfileImg: base64Image,
+        token: userData.token,
+      };
+      const response = await getDataFromAPI('setProfilePhoto', reqData);
+      if (response?.data?.success) {
+        setBase64Image(base64Image || '');
+        Alert.alert('', response?.data?.message);
+      } else {
+        if (response?.status === 498) {
+          //session expire
+          Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage, [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigateToLoginScreen(navigation, dispatch);
+
+                // delete data of perticular key in localstorage
+                AsyncStorage.removeItem('LoginUserData');
+              },
+            },
+          ]);
+        } else {
+          Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
+        }
+      }
+    } catch (err) {
+      console.log('Error while calling setProfileImage API', err);
+    }
+  };
+
   const openCamera = async () => {
     try {
       const img = await ImagePicker.openCamera({
         width: 300,
         height: 400,
         cropping: true,
+        compressImageQuality: 0.8,
+        includeBase64: true,
       });
-      setImageUri(img.path);
+      console.log('img', img.size / 1024 + 'KB');
+
+      // const base64 = await RNFS.readFile(img?.path, 'base64');
+      // console.log('base64', base64);
+
+      setProfileImage(img?.data || '');
     } catch (err) {
       console.log(err);
     }
@@ -112,8 +157,11 @@ const Profile = () => {
         width: 300,
         height: 400,
         cropping: true,
+        compressImageQuality: 0.8,
+        includeBase64: true,
       });
-      setImageUri(img.path);
+      console.log('img', img.size / 1024 + 'KB');
+      setProfileImage(img?.data || '');
     } catch (err) {
       console.log(err);
     }
@@ -122,14 +170,14 @@ const Profile = () => {
     <View style={{flex: 1}}>
       <View style={styles.upperView}>
         <View style={{width: '32%'}}>
-          {imageUri === '' ? (
+          {base64Image === '' ? (
             <Image
               source={require('../../../../Public/Logos/man.png')}
               style={{width: 130, height: 130}}
             />
           ) : (
             <Image
-              source={{uri: imageUri}}
+              source={{uri: `data:image/jpeg;base64,${base64Image}`}}
               style={{width: 130, height: 130, borderRadius: 75}}
             />
           )}

@@ -42,6 +42,10 @@ const schema = new mongoose.Schema(
       min: 8,
       max: 64,
     },
+    base64ProfileImg: {
+      type: String,
+      default: '',
+    },
     token: [
       {
         token: {

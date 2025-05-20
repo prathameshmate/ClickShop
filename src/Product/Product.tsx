@@ -164,9 +164,7 @@ const Product = (props: any) => {
               onPress={() => {
                 handleRemoveCart(id);
               }}>
-              <Text style={{fontWeight: 'bold', color: 'red'}}>
-                Remove From Cart
-              </Text>
+              <Text style={{fontWeight: 'bold', color: 'red'}}>Remove</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity

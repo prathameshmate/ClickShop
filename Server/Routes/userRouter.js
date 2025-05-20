@@ -167,6 +167,7 @@ router.post('/profile', auth, (req, res) => {
         username: userData?.userName,
         number: userData?.mobileNumber,
         email: userData?.email,
+        base64ProfileImg: userData?.base64ProfileImg,
       },
     });
   } catch (err) {
@@ -229,6 +230,37 @@ router.post('/update', auth, async (req, res) => {
     res.status(422).json({
       ...responseFormat,
       errorMessage: `Error while calling update profile API : ${err}`,
+    });
+  }
+});
+//API for update profile photo
+router.post('/setProfilePhoto', auth, async (req, res) => {
+  try {
+    const {base64ProfileImg} = req.body;
+
+    if (base64ProfileImg) {
+      const userData = req?.body?.resultDoc;
+
+      userData.base64ProfileImg = base64ProfileImg;
+
+      await userData?.save();
+
+      res.status(200).json({
+        ...responseFormat,
+        success: true,
+        data: {},
+        message: 'Profile Image set sucessfully',
+      });
+    } else {
+      res.status(422).json({
+        ...responseFormat,
+        errorMessage: 'please add profile photo',
+      });
+    }
+  } catch (err) {
+    res.status(422).json({
+      ...responseFormat,
+      errorMessage: `Error while setting profile Photo API : ${err}`,
     });
   }
 });
