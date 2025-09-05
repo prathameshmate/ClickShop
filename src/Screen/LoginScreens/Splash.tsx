@@ -66,7 +66,13 @@ const Splash = () => {
       }}>
       <Image
         source={require('../../../Public/Logos/logo.jpg')}
-        style={{height: 200, width: 200, borderRadius: 100}}
+        resizeMethod="scale"
+        style={{
+          height: 120,
+          width: 100,
+          borderWidth: 1,
+          backgroundColor: 'red',
+        }}
       />
     </View>
   );
