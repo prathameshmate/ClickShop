@@ -18,6 +18,10 @@ const responseFormat = {
   data: {},
 };
 
+router.get('/', (req, res) => {
+  res.send('click shop home page');
+});
+
 // API for User Registration
 router.post('/launchDetails', auth, async (req, res) => {
   try {
