@@ -83,7 +83,7 @@ const Orders = () => {
         }
       } else handleAPIError(response);
     } catch (err) {
-      console.error('Profile fetch error:', err);
+      console.log('Profile fetch error:', err);
     }
   };
 

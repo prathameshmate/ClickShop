@@ -49,7 +49,7 @@ const Splash = () => {
 
         return () => clearTimeout(time);
       } catch (error) {
-        console.error('Error reading async storage dat  a:', error);
+        console.log('Error reading async storage dat  a:', error);
       }
     };
     launchDetails();

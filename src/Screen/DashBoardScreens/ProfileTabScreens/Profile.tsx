@@ -47,7 +47,7 @@ const Profile = () => {
         setBase64Image(response.data.data.base64ProfileImg || '');
       } else handleAPIError(response);
     } catch (err) {
-      console.error('Profile fetch error:', err);
+      console.log('Profile fetch error:', err);
     }
   };
 
@@ -80,7 +80,7 @@ const Profile = () => {
         Alert.alert('', response.data.message);
       } else handleAPIError(response);
     } catch (err) {
-      console.error('Set profile image error:', err);
+      console.log('Set profile image error:', err);
     }
   };
 
@@ -143,7 +143,7 @@ const Profile = () => {
       updateProfilePhoto(base64);
       setVisible(false);
     } catch (err) {
-      console.error('Image selection error:', err);
+      console.log('Image selection error:', err);
     }
   };
 

@@ -117,7 +117,7 @@ const Cart = () => {
         handleAPIError(response);
       }
     } catch (err) {
-      console.error('error while calling placeOrder API:', err);
+      console.log('error while calling placeOrder API:', err);
     }
   };
 

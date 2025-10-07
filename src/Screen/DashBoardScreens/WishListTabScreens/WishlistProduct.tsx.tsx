@@ -71,7 +71,6 @@ const WishlistProduct = (props: any) => {
           {isAddedCart ? (
             <View style={styles.containerView3}>
               <Text style={{fontWeight: 'bold', color: 'green'}}>
-                {' '}
                 ✔ Item in cart
               </Text>
             </View>

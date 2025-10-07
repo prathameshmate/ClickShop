@@ -101,7 +101,7 @@ const Login = () => {
         Alert.alert('', response?.data?.errorMessage || CONS?.errorMessage);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       Alert.alert('Error', 'Something went wrong. Please try again later.');
     } finally {
       setLoading(false);
